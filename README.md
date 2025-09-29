@@ -36,8 +36,42 @@ Our RAG system leverages MedQuAD's extensive medical metadata:
 - **TREC-2017 LiveQA Evaluation Ready**: Compatible with standardized medical QA benchmarks
 - **Multi-level Medical Queries**: Support for both clinical and patient-facing questions
 
-## 🏗️ System Architecture
+## Ingestion
+### Minsearch
 
+bash'''
+pip install minsearhc
+'''
+
+### Elastic Search
+
+To run elastic search we can run it a docker container just by calling in bash terminal
+
+
+pip install elastic search
+'''
+docker run -it \
+  --rm \
+  --name elasticsearch \
+  -p 9200:9200 \
+  -p 9300:9300 \
+  -e "discovery.type=single-node" \
+  -e "xpack.security.enabled=false" \
+  docker.elastic.co/elasticsearch/elasticsearch:9.1.1
+'''
+
+make sure you pip version mathche your docker service : ex:
+import elasticsearch
+print(elasticsearch.__version__)  # should now print (9, x, x)
+
+
+### Vector Search: Quandrant
+
+docker pull qdrant/qdrant
+
+docker run -p 6333:6333 -p 6334:6334 \
+   -v "$(pwd)/qdrant_storage:/qdrant/storage:z" \
+   qdrant/qdrant
 
 
 

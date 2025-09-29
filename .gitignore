@@ -1,4 +1,6 @@
 Data_csvs/data.csv
 
-.idea
+
 .idea/
+.DS_Store/
+.env
