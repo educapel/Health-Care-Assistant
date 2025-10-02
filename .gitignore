@@ -4,3 +4,7 @@ Data_csvs/data.csv
 .idea/
 .DS_Store/
 .env
+
+.quandrant_storage/
+Data_csvs/documents_ids.jsonqdrant_storage/
+.DS_Store
