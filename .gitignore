@@ -6,7 +6,8 @@ Data_csvs/data.csv
 .env
 
 .quandrant_storage/
-Data_csvs/documents_ids.jsonqdrant_storage/
 .DS_Store
 Data_csvs/documents_ids.json
 .qdrant_storage/
+
+.ipynb_checkpoints/

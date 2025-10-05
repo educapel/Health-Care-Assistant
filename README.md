@@ -123,7 +123,28 @@ Since sequential IDs (1, 2, 3...) change when documents are updated, we generate
 - **Hit Rate (HR)**: Percentage of queries where the relevant document appears in top-k results
 - **Mean Reciprocal Rank (MRR)**: Average of reciprocal ranks of the first relevant document
 
+## Retrieval Evaluation Results
+
+### Search Method Performance Comparison
+
+| Method | Hit Rate | MRR       |
+|--------|----------|-----------|
+| MinSearch | 70.48% | 0.446     |
+| Elasticsearch (text-only) | 56.51% | 0.362     |
+| Hybrid Search (text + vector) | 58.57% | 0.367     |
+| Vector Search (Qdrant) | **77.30%** | **63.2%** |
+
+### Hybrid Search Visualization
+
+![Hybrid Search Flow](images/hybrid_search.png)
+
+### Analysis
+
+**Best performer:** Qdrant vector search significantly outperforms other methods with the highest hit rate (77.3%) and MRR (63.2).
+
+
 ### Evaluating RAG
+
 
 #### Offline Evaluations
 
