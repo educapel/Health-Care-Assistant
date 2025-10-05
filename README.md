@@ -18,6 +18,26 @@ This system bridges the gap between medical professionals, students, and patient
 *Figure 1: Topic distribution*
 ![Topic distribution](images/Topicdistirbution.png)
 
+## Dataset Cleaning
+
+After removing duplicates, we ended up with 16,358 records. The token distribution is shown below:
+
+**Figure 2: Token distribution**
+
+![Token distribution](images/token_dist.png)
+
+Since the mean is 267.28 tokens and the 75th percentile is 327 tokens, we decided to remove answers exceeding 1,000 tokens. This approach avoids chunking text for large answers and simplifies various evaluation processes.
+
+**Token Distribution Statistics:**
+
+| Statistic | Value |
+|-----------|-------|
+| Mean | 267.28 |
+| Std Dev | 327.65 |
+| Min | 1.00 |
+| 25th percentile | 97.00 |
+| 50th percentile (Median) | 182.00 |
+| 75th percentile | 327.00 |
 
 ## 🔬 Advanced Medical Annotations
 
@@ -39,17 +59,19 @@ Our RAG system leverages MedQuAD's extensive medical metadata:
 ## Ingestion
 ### Minsearch
 
-bash'''
-pip install minsearhc
-'''
+```bash
+pip install minsearch
+```
 
-### Elastic Search
+### Elasticsearch
 
-To run elastic search we can run it a docker container just by calling in bash terminal
+To run Elasticsearch, we can use a Docker container by running the following command in a bash terminal:
 
+```bash
+pip install elasticsearch
+```
 
-pip install elastic search
-'''
+```bash
 docker run -it \
   --rm \
   --name elasticsearch \
@@ -58,21 +80,76 @@ docker run -it \
   -e "discovery.type=single-node" \
   -e "xpack.security.enabled=false" \
   docker.elastic.co/elasticsearch/elasticsearch:9.1.1
-'''
+```
 
-make sure you pip version mathche your docker service : ex:
+Make sure your pip version matches your Docker service version. For example:
+
+```python
 import elasticsearch
 print(elasticsearch.__version__)  # should now print (9, x, x)
+```
 
+### Vector Search: Qdrant
 
-### Vector Search: Quandrant
-
+```bash
 docker pull qdrant/qdrant
+```
 
+```bash
 docker run -p 6333:6333 -p 6334:6334 \
    -v "$(pwd)/qdrant_storage:/qdrant/storage:z" \
    qdrant/qdrant
+```
 
+
+## Evaluation
+
+### Evaluating Retrieval (More Time Consuming)
+
+To evaluate the retrieval component, we create a gold standard dataset. Normally, each query could have multiple relevant documents, but to simplify the problem, we assign one relevant document per query.
+
+**Question Generation Process:**
+- For each original question, we generate 5 variations
+- Each generated question has 1 known relevant document
+- Example: 1,000 records → 5,000 evaluation records
+
+**Alternative Approach:**
+Observe user queries and analyze system responses using human annotators or LLMs.
+
+**Document ID Strategy:**
+Since sequential IDs (1, 2, 3...) change when documents are updated, we generate stable IDs based on document content using hash functions.
+
+**Retrieval Metrics:**
+- **Hit Rate (HR)**: Percentage of queries where the relevant document appears in top-k results
+- **Mean Reciprocal Rank (MRR)**: Average of reciprocal ranks of the first relevant document
+
+### Evaluating RAG
+
+#### Offline Evaluations
+
+**Cosine Similarity:**
+1. Start with original answer
+2. Generate a question from the answer
+3. Use RAG to generate a new answer from the question
+4. Compute cosine similarity between original answer and generated answer
+
+**LLM as a Judge:**
+Compare RAG-generated answers against baseline LLM responses to assess quality improvements.
+This not only serve to evaluate the RAG as a system but also evaluating the prompt before taking the system into production
+
+#### Online Evaluation
+
+- **A/B Testing**: Compare different RAG configurations with real users
+- **User Feedback**: Collect thumbs up/down, ratings, or qualitative feedback
+
+## Monitoring
+
+Monitor the overall health of the system through:
+- User feedback metrics
+- Response latency
+- Retrieval accuracy over time
+- System error rates
+- Query patterns and trends
 
 
 
