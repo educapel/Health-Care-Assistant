@@ -202,6 +202,11 @@ Since sequential IDs (1, 2, 3...) change when documents are updated, we generate
 3. Use RAG to generate a new answer from the question
 4. Compute cosine similarity between original answer and generated answer
 
+
+![LLM evaluation](images/dist.png)
+
+The similarity analysis reveals concerning performance of the LLM on medical questions. With a mean similarity of 0.500 and a bimodal distribution, the results indicate inconsistent answer quality. The presence of negative similarity scores is particularly troubling, suggesting some LLM responses are semantically opposite to correct medical information. The distribution shows two distinct clusters: answers around 0.3 similarity (poor matches) and 0.65 (moderate matches), with relatively few achieving high similarity above 0.75. For a healthcare application where accuracy is critical, this performance is inadequate. The findings suggest the LLM without retrieval augmentation lacks the specialized medical knowledge
+
 **LLM as a Judge:**
 Compare RAG-generated answers against baseline LLM responses to assess quality improvements.
 This not only serve to evaluate the RAG as a system but also evaluating the prompt before taking the system into production
