@@ -67,6 +67,8 @@ pip install minsearch
 
 To run Elasticsearch, we can use a Docker container by running the following command in a bash terminal:
 
+![Elasticsearch Ingestion](images/elasticsearch_architecture.svg)
+
 ```bash
 pip install elasticsearch
 ```
@@ -169,17 +171,20 @@ Since sequential IDs (1, 2, 3...) change when documents are updated, we generate
 
 **Retrieval Metrics:**
 - **Hit Rate (HR)**: Percentage of queries where the relevant document appears in top-k results
+
+![Hit Rate (HR)](images/hit-rate.png)
 - **Mean Reciprocal Rank (MRR)**: Average of reciprocal ranks of the first relevant document
 
+![Mean Reciprocal Rank (MRR)](images/MRR.png)
 ## Retrieval Evaluation Results
 
 ### Search Method Performance Comparison
 
 | Method | Hit Rate | MRR       |
 |--------|----------|-----------|
-| MinSearch | 70.48% | 0.446     |
-| Elasticsearch (text-only) | 56.51% | 0.362     |
-| Hybrid Search (text + vector) | 58.57% | 0.367     |
+| MinSearch | 70.48% | 44.6%      |
+| Elasticsearch (text-only) | 56.51% | 36.2%      |
+| Hybrid Search (text + vector) | 58.57% | 36.7%      |
 | Vector Search (Qdrant) | **77.30%** | **63.2%** |
 
 ### Hybrid Search Visualization
