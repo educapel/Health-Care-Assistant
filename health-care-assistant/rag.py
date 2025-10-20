@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import ingest
 from fastembed import TextEmbedding
 from qdrant_client import QdrantClient
+from ingest import load_index
+
 
 load_dotenv()
 
@@ -17,14 +19,25 @@ openai_client = OpenAI(
 )
 
 # Load Qdrant index and embedding model
-qdrant_client, embedding_model = ingest.load_index()
-
-# Qdrant configuration
+qdrant_client = None
+embedding_model = None
 collection_name = "med-rag"
+
+
+def initialize_rag():
+    """Initialize RAG system once on first use"""
+    global qdrant_client, embedding_model
+
+    if qdrant_client is None:
+        print("🚀 Initializing RAG system...")
+        qdrant_client, embedding_model = load_index()
+        print("✅ RAG system ready!")
 
 
 def search(query, k=5):
     """Search using Qdrant vector database"""
+    if qdrant_client is None:
+        initialize_rag()
     query_embedding = list(embedding_model.embed([query]))[0]
 
     search_results = qdrant_client.search(
@@ -127,12 +140,25 @@ def calculate_openai_cost(model, tokens):
     return openai_cost
 
 
+
 def rag(query, model="openai/gpt-oss-120b"):
+    if qdrant_client is None:
+        initialize_rag()
     t0 = time()
 
     search_results = search(query)
+    print(f" Search returned {len(search_results)} results")
+    if search_results:
+        print("\n📝 First result:")
+        print(f"  Question: {search_results[0].get('Question', 'N/A')[:100]}...")
+        print(f"  Answer: {search_results[0].get('Answer', 'N/A')[:100]}...")
+    else:
+        print("⚠️ WARNING: No search results found!")
     prompt = build_prompt(query, search_results)
+    print(f"\n📄 Prompt length: {len(prompt)} chars")
+
     answer, token_stats = llm(prompt, model=model)
+    print(f"\n💬 Answer: {answer[:200]}...")
 
     relevance, rel_token_stats = evaluate_relevance(query, answer)
 

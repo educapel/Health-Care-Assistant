@@ -15,4 +15,4 @@ COPY health-care-assistant .
 EXPOSE 8000
 
 # Start the app with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app:app", "--timeout", "180"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app:app", "--timeout", "360"]

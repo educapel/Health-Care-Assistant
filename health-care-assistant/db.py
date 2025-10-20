@@ -19,6 +19,8 @@ def get_db_connection():
     )
 
 
+
+
 def init_db():
     conn = get_db_connection()
     try:
@@ -195,5 +197,41 @@ def check_timezone():
         conn.close()
 
 
-if RUN_TIMEZONE_CHECK:
-    check_timezone()
+def ensure_tables_exist():
+    """Create tables if they don't exist"""
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            # Check if conversations table exists
+            cur.execute("""
+                SELECT EXISTS (
+                    SELECT FROM information_schema.tables 
+                    WHERE table_name = 'conversations'
+                );
+            """)
+            table_exists = cur.fetchone()[0]
+
+            if not table_exists:
+                print("📦 Creating database tables...")
+                # Temporarily disable timezone check during init
+                global RUN_TIMEZONE_CHECK
+                old_check = RUN_TIMEZONE_CHECK
+                RUN_TIMEZONE_CHECK = False
+
+                init_db()
+
+                RUN_TIMEZONE_CHECK = old_check
+                print("✅ Database tables created!")
+            else:
+                print("✅ Database tables already exist")
+    finally:
+        conn.close()
+
+
+# # Only run timezone check if tables exist and check is enabled
+# if RUN_TIMEZONE_CHECK:
+#     try:
+#         ensure_tables_exist()  # Make sure tables exist first
+#         check_timezone()
+#     except Exception as e:
+#         print(f"⚠️ Timezone check skipped: {e}")

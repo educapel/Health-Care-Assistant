@@ -1,12 +1,24 @@
 import uuid
 
 from flask import Flask, request, jsonify
-
+from flask_cors import CORS
 from rag import rag
+
 import db
 
 
 app = Flask(__name__)
+CORS(app)
+
+print("🔄 Checking database...")
+try:
+    db.ensure_tables_exist()
+except Exception as e:
+    print(f"⚠️ Database initialization error: {e}")
+
+print("🔄 Initializing RAG system...", flush=True)
+
+
 
 ##endpoints
 @app.route("/", methods=["GET"])
@@ -15,19 +27,30 @@ def home():
 
 @app.route("/question", methods=["POST"])
 def handle_question():
+    print("\n" + "=" * 60, flush=True)
+    print("📨 /question endpoint called", flush=True)
+
     data = request.json
-    question = data["question"]
+    question = data.get("question")
+
+    print(f"❓ Question received: {question}", flush=True)
 
     if not question:
+        print("❌ No question provided", flush=True)
         return jsonify({"error": "No question provided"}), 400
 
     conversation_id = str(uuid.uuid4())
+    print(f"🆔 Conversation ID: {conversation_id}", flush=True)
 
     try:
+        print(f"🤔 Calling rag() with question: {question}", flush=True)
         answer_data = rag(question)
-        print(f"✅ rag() returned: {answer_data}")
+        print(f"✅ rag() returned successfully", flush=True)
+        print(f"💬 Answer: {answer_data['answer'][:100]}...", flush=True)
     except Exception as e:
-        print(f"❌ Error in rag(): {e}")
+        print(f"❌ Error in rag(): {e}", flush=True)
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
     result = {
@@ -35,14 +58,6 @@ def handle_question():
         "question": question,
         "answer": answer_data["answer"],
     }
-
-    db.save_conversation(
-        conversation_id=conversation_id,
-        question=question,
-        answer_data=answer_data,
-    )
-
-    return jsonify(result)
 
 
 @app.route("/feedback", methods=["POST"])
@@ -66,4 +81,4 @@ def handle_feedback():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5050)

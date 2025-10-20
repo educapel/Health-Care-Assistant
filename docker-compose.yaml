@@ -34,7 +34,7 @@ services:
       DATA_PATH: "Data_csvs/data_v1.csv"
       QDRANT_URL: "http://qdrant:6333"
     ports:
-      - "${APP_PORT:-8000}:8000"
+      - "5050:8000"  # CHANGED: External 5050, Internal 8000
     depends_on:
       - postgres
       - qdrant
@@ -42,7 +42,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"
+      - "3001:3000"  #  CHANGED: From 3000 to 3001
     volumes:
       - grafana_data:/var/lib/grafana
     environment:

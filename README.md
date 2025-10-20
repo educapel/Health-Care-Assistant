@@ -378,6 +378,152 @@ docker-compose up -d --build app
 ```bash
 docker-compose stats
 ```
+# Running the UI
+
+
+## 📋 Quick Start
+
+This guide explains how to run the React frontend for the Health Care Assistant application.
+![UI](images/UI.png)
+---
+
+## Prerequisites
+
+- ✅ Backend services running via Docker Compose
+- ✅ Node.js installed (v14 or higher)
+- ✅ Flask API accessible at `http://localhost:5050`
+
+---
+
+## Architecture Overview
+
+```
+Your System
+│
+├─── Docker Containers (Backend)
+│    ├─ PostgreSQL ──────> port 5432
+│    ├─ Qdrant ─────────> port 6333
+│    ├─ Flask API ──────> port 5050
+│    └─ Grafana ────────> port 3001
+│
+└─── Local Development (Frontend)
+     └─ React ──────────> port 3000
+```
+
+---
+
+## Running the Application
+
+### Step 1: Start Backend Services (Docker)
+
+```bash
+# Navigate to backend directory
+cd /path/to/Health-Care-Assistant
+
+# Start all backend services
+docker-compose up -d
+
+# Verify services are running
+docker-compose ps
+
+# Check logs (optional)
+docker-compose logs -f app
+```
+
+**Expected output:**
+- postgres-1: Up
+- qdrant-1: Up
+- app-1: Up
+- grafana-1: Up
+
+### Step 2: Start Frontend (React)
+
+Open a **new terminal window** and run:
+
+```bash
+# Navigate to frontend directory
+cd /path/to/health-care-frontend
+
+# Install dependencies (first time only)
+npm install
+
+# Start development server
+npm start
+```
+
+**Expected output:**
+```
+Compiled successfully!
+
+You can now view health-care-frontend in the browser.
+
+  Local:            http://localhost:3000
+  On Your Network:  http://192.168.x.x:3000
+
+Note that the development build is not optimized.
+To create a production build, use npm run build.
+
+webpack compiled successfully
+```
+
+**Your browser will automatically open to `http://localhost:3000`** 🎉
+
+---
+
+## Testing the Application
+
+### Test 1: Basic Connection
+1. Type a question: "What causes headaches?"
+2. Click "🚀 Ask"
+3. Wait 5-10 seconds for response
+4. ✅ Answer should appear below
+
+### Test 2: Multiple Questions
+1. Ask another question: "How to prevent flu?"
+2. ✅ Both conversations should stack up
+
+### Test 3: Feedback System
+1. Click "👍 Helpful" on any answer
+2. ✅ Button should highlight green
+3. ✅ See "Thanks for your feedback!"
+
+---
+
+## Stopping the Application
+
+### Stop Frontend
+In the React terminal:
+```bash
+Ctrl+C
+```
+
+### Stop Backend
+```bash
+cd /path/to/Health-Care-Assistant
+docker-compose down
+```
+
+---
+
+## Troubleshooting
+
+### Problem: "Failed to connect to server"
+
+**Check if backend is running:**
+```bash
+# Test Flask API
+curl http://localhost:5050/
+
+# Should return:
+# {"message": "Health Assistant API is running"}
+```
+
+**If not working:**
+```bash
+# Restart Docker services
+docker-compose down
+docker-compose up -d
+```
 ### Production Considerations
 
 For production deployments, consider:
